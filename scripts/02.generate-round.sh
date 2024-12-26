@@ -4,15 +4,15 @@ model="$1"
 group_size="$2"
 survivors="$3"
 stage="$4"
-round="$4"
+round="$5"
 
-tmpdir=/tmp/tournament
+tmpdir=/tmp/tournament-"$stage"-"$round"
 
 
-# remove tempdir
-rm -r "$tmpdir" || true
+# create tempdir
+rm -r "$tmpdir" 2>/dev/null || true
 mkdir -p "$tmpdir"
-cp "$output_dir"/stage-"$stage" "$tmpdir/stage"
+cp data/02.tournament/stage-"$stage" "$tmpdir/stage"
 
 # preparing data
 cat "$tmpdir/stage" | shuf > "$tmpdir"/shuffled
@@ -32,7 +32,7 @@ for f in "$tmpdir"/split-*; do
     ) | ($model > "$f.filtered")
 done
 
-echo round over, outputting reqults for round-"$stage"."$round" >&2
+echo round over, dumping results for round-"$stage"."$round" >&2
 cat "$tmpdir"/*.filtered | \
     cut -d ' ' -f 2- | \
     sort | \

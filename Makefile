@@ -6,7 +6,7 @@ tournament_model      := "docker exec -i ollama ollama run llama3"
 tournament_rounds     := 5
 tournament_group_size := 200
 tournament_survivors  := 20
-tournament_stages:    := 10
+tournament_stages     := 10
 
 all: run-tournament
 
@@ -65,7 +65,7 @@ data/02.tournament/sorted-1: data/02.tournament/stage-1
 data/02.tournament/sorted-%: data/02.tournament/stage-$$(shell scripts/02.get-stage.sh $@) scripts/02.sort-data.sh
 	@echo "02 - Sorting data for stage $*"
 	@stage=$$(shell scripts/02.get-stage.sh $@)
-	@previous_stage=$$(shell echo $$( $* - 1))
+	@previous_stage=$$(( $* -1))
 	@./scripts/02.sort-data.sh "$$stage" "$$previous_stage" > "$@"
 
 
