@@ -33,7 +33,7 @@ run-tournament: data/02.tournament/sorted-$(tournament_stages)
 
 data/02.tournament/stage-0:
 	@echo "Creating dummy file for stage 0"
-	@ln -S "$@" /dev/null
+	@echo > "$@" 
 
 # Step 2a: Base case for the first stage
 data/02.tournament/stage-1: data/01.binaries scripts/02.first-round.sh
@@ -51,7 +51,7 @@ data/02.tournament/round-%: data/02.tournament/stage-$$(shell scripts/02.get-sta
 	@stage=$$(shell scripts/02.get-stage.sh $@)
 	@round=$$(shell scripts/02.get-round.sh $@)
 	@echo "Generating data for stage $$stage/$(tournament_stages), round $$round/$(tournament_rounds)"
-	@echo ./scripts/02.generate-round.sh \
+	@./scripts/02.generate-round.sh \
 		"$(tournament_model)" \
 		"$(tournament_group_size)" "$(tournament_survivors)" \
 		"$$stage" "$$round" > $@
