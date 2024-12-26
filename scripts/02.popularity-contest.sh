@@ -2,7 +2,7 @@
 
 alias llama3="docker exec -i ollama ollama run llama3"
 
-stages=30
+stages=9
 rounds=5
 group_size=200
 survivors=20
@@ -25,6 +25,10 @@ cat data/01.bin-packages | \
 
 for stage in $(seq "$stages"); do
 	for round in $(seq "$rounds"); do
+        
+        # if it already exists, don't recreate
+		[ -e "$output_dir"/round"$stage"."$round" ] continue
+
 		# remove tempdir
 		rm -r "$tmpdir" || true
 		mkdir -p "$tmpdir"
@@ -32,7 +36,6 @@ for stage in $(seq "$stages"); do
 
 		cat "$tmpdir/stage" | shuf > "$tmpdir"/shuffled
 		split -l $group_size -d -a 6 "$tmpdir/shuffled" "$tmpdir/split-"
-
 
 		for f in "$tmpdir"/split-*; do
 			echo "$(date +'%Y-%m-%d %H:%M:%S')": \

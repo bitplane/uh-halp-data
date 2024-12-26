@@ -2,6 +2,14 @@
 
 Making a dataset for command line help completion.
 
+## Requirements
+
+* Run on Ubuntu
+* Install Docker
+* Install make
+
+It uses Docker, so it won't work in a container.
+
 ## Steps
 
 1. Get a list of all binaries in Ubuntu's package manager
