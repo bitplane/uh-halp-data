@@ -1,13 +1,12 @@
 # Use phony targets for high-level steps
 .PHONY: all build-tournament help generate-summaries help
 
-# Popularity contest parameters.
-tournament_rounds := 5
-tournament_stages: := 10
-tournament_model := "docker exec -i ollama ollama run llama3"
-tournament_batch_size := 200
-tournament_survivors := 20
-
+# Popularity tournament parameters.
+tournament_model      := "docker exec -i ollama ollama run llama3"
+tournament_rounds     := 5
+tournament_group_size := 200
+tournament_survivors  := 20
+tournament_stages:    := 10
 
 all: run-tournament
 
@@ -48,11 +47,14 @@ data/02.tournament/stage-%: $$(shell scripts/02.list-rounds.sh $* $(tournament_r
 	@cat "$^" | sort | uniq | shuf > "$@"
 
 # Run this round
-data/02.tournament/round-%: data/02.tournament/stage-$$(shell scripts/02.get-stage.sh $@) scripts/02.run-round.sh
+data/02.tournament/round-%: data/02.tournament/stage-$$(shell scripts/02.get-stage.sh $@) scripts/02.generate-round.sh
 	@stage=$$(shell scripts/02.get-stage.sh $@)
 	@round=$$(shell scripts/02.get-round.sh $@)
 	@echo "Generating data for stage $$stage/$(tournament_stages), round $$round/$(tournament_rounds)"
-	@echo ./scripts/02.generate-round.sh "$(tournament_model)" "$<" "$(tournament_batch_size)" "$(tournament_survivors)" > $@
+	@echo ./scripts/02.generate-round.sh \
+		"$(tournament_model)" \
+		"$(tournament_group_size)" "$(tournament_survivors)" \
+		"$$stage" "$$round" > $@
 
 # Base case for the first combo
 data/02.tournament/sorted-1: data/02.tournament/stage-1
@@ -64,8 +66,7 @@ data/02.tournament/sorted-%: data/02.tournament/stage-$$(shell scripts/02.get-st
 	@echo "02 - Sorting data for stage $*"
 	@stage=$$(shell scripts/02.get-stage.sh $@)
 	@previous_stage=$$(shell echo $$( $* - 1))
-	@./scripts/sort-data.sh "$$stage" "$$previous_stage"
-
+	@./scripts/02.sort-data.sh "$$stage" "$$previous_stage" > "$@"
 
 
 ## Step 3:
