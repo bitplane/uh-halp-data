@@ -77,7 +77,7 @@ def rank(keys, host, port):
             if len(parts) > 2:
                 continue  # Skip yapping
 
-            command = parts[0] if len(parts) == 1 else "".join(parts)
+            command = parts[-1]
             if command in keys:
                 filtered_output.append(command)
 
@@ -101,7 +101,8 @@ def score(dictionary, batch_size, host, port, keys):
             dictionary[name]["score"] += i
             print(f"{i} {name}")
         count += batch_size
-        print(f"{count}/{total} - winner: {ranked[0]}", file=sys.stderr)
+        if ranked:
+            print(f"{count}/{total} - winner: {ranked[0]}", file=sys.stderr)
 
 def score_all(dictionary, batch_size, host, port):
     keys = list(dictionary.keys())
