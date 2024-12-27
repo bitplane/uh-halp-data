@@ -92,13 +92,16 @@ def rank(keys, host, port):
         print(f"Error making request to {url}: {e}", file=sys.stderr)
         return []
 
-def score(dictionary, batch_size, host, port, keys=None):
-    keys = keys if keys is not None else list(dictionary.keys())
+def score(dictionary, batch_size, host, port, keys):
+    total = len(keys)
+    count = 0
     for batch in chunker(keys, batch_size):
         ranked = rank(batch, host, port)
         for i, name in enumerate(reversed(ranked), start=1):
             dictionary[name]["score"] += i
             print(f"{i} {name}")
+        count += batch_size
+        print(f"{count}/{total} - winner: {ranked[0]}", file=sys.stderr)
 
 def score_all(dictionary, batch_size, host, port):
     keys = list(dictionary.keys())
