@@ -3,7 +3,7 @@
 
 MAX_PACKAGES=5000
 
-all: data/03d.docker-build
+all: data/03e.docker-run
 	# finished? really? give yourself a pat on the back
 
 
@@ -54,5 +54,12 @@ data/03c.binary-names: data/01b.ubuntu-binaries-and-packages data/03a.package-pr
 ## Step 3d: Build Docker image
 data/03d.docker-build: data/03c.binary-names scripts/03d.Dockerfile
 	@echo "03 - Building Docker image"
-	docker build -t package-installer -f scripts/03d.Dockerfile .
+	docker build -t uh-halp-data-binaries:ubuntu-`uname -m` -f scripts/03d.Dockerfile .
+	@touch "$@"
+
+## Step 3e: Run Docker image
+data/03e.docker-run: data/03d.docker-build
+	@echo "03 - Running Docker image"
+	@mkdir -p data/03e.generate-help
+	docker run --rm -v $(PWD)/data/03e.generate-help:/data/04.generate-help uh-halp-data-binaries:ubuntu-`uname -m` /scripts/04.extract-help.sh /data
 	@touch "$@"
