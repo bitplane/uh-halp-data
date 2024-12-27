@@ -2,7 +2,7 @@
 .ONESHELL:
 
 
-all: data/02a.popularity-contest
+all: data/03a.package-priority
 	# finished? really? give yourself a pat in the mouth
 
 
@@ -29,5 +29,10 @@ data/02a.popularity-contest: data/01.binaries
 	@echo "02 - Running popularity contest"
 	@timestamp=$$(date -u +%Y-%m-%d_%H%M%S)
 	@./scripts/02.popularity_contest.py data/01.binaries > "$@.$$timestamp.tmp"
-	@cp "$@.$$timestamp.tmp "$@"
+	@cp "$@.$$timestamp.tmp" "$@"
 
+## Step 3a: Package priority
+data/03a.package-priority: data/02a.popularity-contest scripts/03a.package_priority.py
+	@echo "03 - Calculating package priority"
+	@./scripts/03a.package_priority.py > "$@.tmp"
+	@mv "$@.tmp" "$@"
