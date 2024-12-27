@@ -9,6 +9,6 @@ original="data/02.tournament/stage-1"
 : < "$original"
 
 # Remove hallucinations
-grep -Fxf "$output" "$original" | \
+grep -Fxf "$original" "$output" | \
     grep -v '^$'
 

@@ -1,4 +1,5 @@
 #!/bin/sh
+
 set -e
 
 model=$1
@@ -33,10 +34,15 @@ for f in "$tmpdir"/split-*; do
         echo
         cat "$f"
         echo "Output $survivors items only. Do not add extra text. Ordered list."
-    ) | ($model > "$f.filtered")
+    ) | $model > "$f.filtered"
+
+    if [ "$(wc -l < "$f.filtered")" -eq 0 ]; then
+        exit 1
+    fi
 done
 
 echo round over, dumping results for round-"$stage"."$round" >&2
+
 cat "$tmpdir"/*.filtered | \
     cut -d ' ' -f 2- | \
     sort | \
