@@ -8,15 +8,20 @@ import json
 import logging
 from logging.handlers import RotatingFileHandler
 
-
 def setup_logger():
     logger = logging.getLogger("binary_ranking")
     logger.setLevel(logging.DEBUG)
 
-    # File handler for /tmp debug log
-    file_handler = RotatingFileHandler(
-        "/tmp/binary_ranking_debug.log", maxBytes=10**6, backupCount=3
-    )
+    # Stream handler for INFO level logs to console (stderr)
+    info_handler = logging.StreamHandler(sys.stderr)
+    info_handler.setLevel(logging.INFO)  # Only logs INFO and above
+    info_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    info_handler.setFormatter(info_formatter)
+    logger.addHandler(info_handler)
+
+    # File handler for DEBUG logs
+    file_handler = RotatingFileHandler("/tmp/binary_ranking_debug.log", maxBytes=10**6, backupCount=3)
+    file_handler.setLevel(logging.DEBUG)  # Logs all levels (DEBUG and above)
     file_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(file_formatter)
     logger.addHandler(file_handler)
@@ -127,6 +132,7 @@ def score(dictionary, batch_size, host, port, keys):
         for i, name in enumerate(reversed(ranked), start=1):
             dictionary[name]["score"] += i
             print(f"{dictionary[name]['score']} {name}")
+            sys.stdout.flush()
         count += batch_size
         if ranked:
             logger.info(f"{count}/{total} - winner: {ranked[0]}")
