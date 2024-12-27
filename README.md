@@ -26,6 +26,25 @@ It uses Docker, so it won't work in a container.
 
 ## Ideas
 
+### TODO
+
+#### Musty haves
+
+* shell builtins in the binary list.
+* Parse `/etc/alternatives` because these are missing
+* Popularity contest needs to filter GUI apps.
+* Add tests / test framework.
+* Docker image + data publish scripts
+* ¿que halp? - translate training data
+
+#### Never to have
+
+* Look at other package sources (brew, pip, npm, cpan, rubygems, go)
+* Mac + Windows specific stuff
+* use `Provides`/`Depends` etc package metadata to get alternatives and ++priority
+* Detect command subcommand pattern with nested --halps going on 
+* manpage dumps from docker image
+
 ### data
 
 * Break this apart and do the same for brew
@@ -37,4 +56,3 @@ It uses Docker, so it won't work in a container.
 * Snag Gemini Nano from Chrome?
 * LaMini-T5-223M?
 * qwen2.5-coder?
-
