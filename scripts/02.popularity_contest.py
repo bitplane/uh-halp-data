@@ -5,7 +5,28 @@ import random
 import requests
 import sys
 import json
+import logging
+from logging.handlers import RotatingFileHandler
 
+def setup_logger():
+    logger = logging.getLogger("binary_ranking")
+    logger.setLevel(logging.DEBUG)
+
+    # Stream handler for stderr
+    stream_handler = logging.StreamHandler(sys.stderr)
+    stream_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    stream_handler.setFormatter(stream_formatter)
+    logger.addHandler(stream_handler)
+
+    # File handler for /tmp debug log
+    file_handler = RotatingFileHandler("/tmp/binary_ranking_debug.log", maxBytes=10**6, backupCount=3)
+    file_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    file_handler.setFormatter(file_formatter)
+    logger.addHandler(file_handler)
+
+    return logger
+
+logger = setup_logger()
 
 def load_lines(lines):
     binary_dict = {}
@@ -63,7 +84,7 @@ def rank(keys, host, port):
                 if "response" in data:
                     responses.append(data["response"])
             except json.JSONDecodeError as e:
-                print(f"JSON decode error: {e} with line: {line}", file=sys.stderr)
+                logger.error(f"JSON decode error: {e} with line: {line}")
                 continue
 
         output = "".join(responses).split("\n")
@@ -86,10 +107,11 @@ def rank(keys, host, port):
                 if number.isdigit() and rest[0] in keys:
                     filtered_output.append(rest[0])
 
+        logger.debug(f"Full response: {response.text}")
         return filtered_output
 
     except requests.RequestException as e:
-        print(f"Error making request to {url}: {e}", file=sys.stderr)
+        logger.error(f"Error making request to {url}: {e}")
         return []
 
 def score(dictionary, batch_size, host, port, keys):
@@ -99,10 +121,10 @@ def score(dictionary, batch_size, host, port, keys):
         ranked = rank(batch, host, port)
         for i, name in enumerate(reversed(ranked), start=1):
             dictionary[name]["score"] += i
-            print(f"{i} {name}")
+            logger.info(f"{i} {name}")
         count += batch_size
         if ranked:
-            print(f"{count}/{total} - winner: {ranked[0]}", file=sys.stderr)
+            logger.info(f"{count}/{total} - winner: {ranked[0]}")
 
 def score_all(dictionary, batch_size, host, port):
     keys = list(dictionary.keys())
@@ -124,11 +146,10 @@ def main():
         random.seed(args.seed)
 
     binary_data = load_file(args.file_name)
-    print(f"Batch size: {args.batch_size}", file=sys.stderr)
-    print(f"Total commands: {len(binary_data)}", file=sys.stderr)
+    logger.info(f"Batch size: {args.batch_size}")
+    logger.info(f"Total commands: {len(binary_data)}")
 
     score_all(binary_data, args.batch_size, args.host, args.port)
 
 if __name__ == "__main__":
     main()
-
