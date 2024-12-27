@@ -20,9 +20,9 @@ data/01b.ubuntu-binaries-and-packages: scripts/01b.all-ubuntu-binaries.sh
 	@mv "$@.tmp" "$@"
 
 ## Step 1 final: combine the outputs
-data/01.binaries: data/01b.ubuntu-binaries-and-packages data/01a.ubuntu-bin scripts/01.combine.sh
+data/01.binaries: data/01b.ubuntu-binaries-and-packages data/01a.ubuntu-bin scripts/01c.combine.sh
 	@echo "01 - Combining binary lists"
-	@./scripts/01.combine.sh > "$@.tmp"
+	@./scripts/01c.combine.sh > "$@.tmp"
 	@mv "$@.tmp" "$@"
 
 ## Step 2: Popularity contest 
