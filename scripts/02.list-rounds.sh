@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 stage=$1
 rounds=$2
 

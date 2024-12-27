@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 input_name="$1"
 
 # remove:

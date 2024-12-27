@@ -1,9 +1,9 @@
 #!/bin/sh
-set -euo pipefail
+set -e
 
-old_data="$1"
-new_data="$2"
+old_file=data/02.tournament/"$1"
+new_file=data/02.tournament/"$2"
 
-cat "$new_data"
-grep -vFf "$new_data" "$old_data"
+cat "$new_file"
+grep -vFf "$new_file" "$old_file"
 

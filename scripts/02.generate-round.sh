@@ -1,6 +1,8 @@
 #!/bin/sh
 
-model="$1"
+set -e
+
+model=$1
 group_size="$2"
 survivors="$3"
 stage="$4"
@@ -17,13 +19,16 @@ cp data/02.tournament/stage-"$stage" "$tmpdir/stage"
 # preparing data
 cat "$tmpdir/stage" | shuf > "$tmpdir"/shuffled
 split -l $group_size -d -a 6 "$tmpdir/shuffled" "$tmpdir/split-"
+total_split=$(ls -1 "$tmpdir"/split-* | wc -l)
+count=0
 
 # running each round...
 for f in "$tmpdir"/split-*; do
+    count=$((count + 1))
     echo "$(date +'%Y-%m-%d %H:%M:%S')": \
-         Stage "$stage"/"$stages", \
-         round "$round"/"$rounds", \
-         file "$(basename "$f")" >&2
+         Stage "$stage"/"$tournament_stages", \
+         round "$round"/"$tournament_rounds", \
+         file "$count"/"$total_split" >&2
     (
         echo "Output $survivors CLI programs from the list below, order by how often they are manually typed."
         echo
