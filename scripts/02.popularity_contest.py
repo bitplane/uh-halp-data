@@ -121,7 +121,7 @@ def score(dictionary, batch_size, host, port, keys):
         ranked = rank(batch, host, port)
         for i, name in enumerate(reversed(ranked), start=1):
             dictionary[name]["score"] += i
-            logger.info(f"{i} {name}")
+            print(f"{dictionary[name]['score']} {name}")
         count += batch_size
         if ranked:
             logger.info(f"{count}/{total} - winner: {ranked[0]}")
