@@ -1,8 +1,5 @@
-# So we can actually have some persistence and do recursion
+# So we can actually have some persistence
 .ONESHELL:
-
-# Popularity tournament parameters.
-
 
 
 all: data/02a.popularity-contest
@@ -30,6 +27,7 @@ data/01.binaries: data/01b.ubuntu-binaries-and-packages data/01a.ubuntu-bin scri
 ## Step 2: Popularity contest 
 data/02a.popularity-contest: data/01.binaries
 	@echo "02 - Running popularity contest"
-	@./scripts/02.popularity_contest.py data/01.binaries >> "$@.tmp"
-	@mv "$@.tmp "$@"
+	@timestamp=$$(date -u +%Y-%m-%d_%H%M%S)
+	@./scripts/02.popularity_contest.py data/01.binaries > "$@.$$timestamp.tmp"
+	@cp "$@.$$timestamp.tmp "$@"
 
