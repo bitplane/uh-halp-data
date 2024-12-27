@@ -1,8 +1,9 @@
 # So we can actually have some persistence
 .ONESHELL:
 
+MAX_PACKAGES=5000
 
-all: data/03a.package-priority
+all: data/03c.docker-build
 	# finished? really? give yourself a pat in the mouth
 
 
@@ -36,3 +37,15 @@ data/03a.package-priority: data/02a.popularity-contest scripts/03a.package_prior
 	@echo "03 - Calculating package priority"
 	@./scripts/03a.package_priority.py > "$@.tmp"
 	@mv "$@.tmp" "$@"
+
+## Step 3b: Limit number of packages
+data/03b.limited-packages: data/03a.package-priority
+	@echo "03 - Limiting to $(MAX_PACKAGES) packages"
+	@head -n $(MAX_PACKAGES) $< | cut -d ' ' -f 2 > "$@.tmp"
+	@mv "$@.tmp" "$@"
+
+## Step 3c: Build Docker image
+data/03c.docker-build: data/03b.limited-packages scripts/03c.Dockerfile
+	@echo "03 - Building Docker image"
+	docker build -t package-installer -f scripts/03c.Dockerfile .
+	@touch "$@"
