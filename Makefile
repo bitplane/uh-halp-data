@@ -3,7 +3,7 @@
 
 MAX_PACKAGES=5000
 
-all: data/03c.docker-build
+all: data/03d.docker-build
 	# finished? really? give yourself a pat in the mouth
 
 
@@ -44,8 +44,15 @@ data/03b.limited-packages: data/03a.package-priority
 	@head -n $(MAX_PACKAGES) $< | cut -d ' ' -f 2 > "$@.tmp"
 	@mv "$@.tmp" "$@"
 
-## Step 3c: Build Docker image
-data/03c.docker-build: data/03b.limited-packages scripts/03c.Dockerfile
+## Step 3c: Get binary names
+data/03c.binary-names: data/01b.ubuntu-binaries-and-packages data/03a.package-priority scripts/03c.get_binary_names.py
+	@echo "03 - Extracting binary names"
+	@cat data/01a.ubuntu-bin > "$@.tmp"
+	@./scripts/03c.get_binary_names.py data/01b.ubuntu-binaries-and-packages data/03b.limited-packages >> "$@.tmp"
+	@mv "$@.tmp" "$@"
+
+## Step 3d: Build Docker image
+data/03d.docker-build: data/03c.binary-names scripts/03d.Dockerfile
 	@echo "03 - Building Docker image"
-	docker build -t package-installer -f scripts/03c.Dockerfile .
+	docker build -t package-installer -f scripts/03d.Dockerfile .
 	@touch "$@"
