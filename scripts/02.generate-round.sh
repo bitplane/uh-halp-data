@@ -1,5 +1,4 @@
 #!/bin/sh
-
 set -e
 
 model=$1
@@ -22,7 +21,7 @@ split -l $group_size -d -a 6 "$tmpdir/shuffled" "$tmpdir/split-"
 total_split=$(ls -1 "$tmpdir"/split-* | wc -l)
 count=0
 
-# running each round...
+# run each group
 for f in "$tmpdir"/split-*; do
     count=$((count + 1))
     echo "$(date +'%Y-%m-%d %H:%M:%S')": \

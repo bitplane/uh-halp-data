@@ -37,10 +37,18 @@ data/01.binaries: data/01b.ubuntu-binaries-and-packages scripts/01.combine.sh
 	@mv "$@.tmp" "$@"
 
 
+#
+# 🐉 WARNING - here be recursive make calls 🐉
+#
+#         Tweak at risk of great pain.
+#
+
 
 ## Step 2: Sort binaries using LLM popularity tournament
 data/02.tournament/results: data/02.tournament/sorted-$(tournament_stages)
-
+	@echo "02 - removing hallucinations"
+	@./scripts/02.clean-outputs.sh $(tournament_stages) > "$@.tmp"
+	@mv "$@.tmp" "$@"
 
 data/02.tournament/stage-0:
 	@echo "Creating dummy file for stage 0"
