@@ -1,9 +1,16 @@
 #!/bin/sh
 set -e
 
-old_file=data/02.tournament/"$1"
-new_file=data/02.tournament/"$2"
+old_file="data/02.tournament/sorted-$1"
+new_file="data/02.tournament/stage-$2"
 
-cat "$new_file"
-grep -vFf "$new_file" "$old_file"
+# Fail if the files don't exist
+: < "$old_file"
+: < "$new_file"
+
+# new lines go to the top of the file
+cat "$new_file" | sort
+
+# old lines minus the new ones go to the end
+grep -vFxf "$new_file" "$old_file"
 

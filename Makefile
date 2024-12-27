@@ -4,7 +4,8 @@
 .ONESHELL:
 
 # So we don't blow through our underpants and make a mess on the floor
-SHELLFLAGS := -e -x
+SHELLFLAGS := -e
+MAKEFLAGS := $(MAKEFLAGS) --no-print-directory
 
 # Popularity tournament parameters.
 tournament_model      := "'docker exec -i ollama ollama run llama3'"
@@ -13,7 +14,9 @@ tournament_group_size := 200
 tournament_survivors  := 20
 tournament_stages     := 10
 
-all: run-tournament
+
+all: data/02.tournament/results
+
 
 ## Step 1a: List default binaries for Ubuntu
 data/01a.ubuntu-bin: scripts/01a.standard-binaries.sh
@@ -36,7 +39,8 @@ data/01.binaries: data/01b.ubuntu-binaries-and-packages scripts/01.combine.sh
 
 
 ## Step 2: Sort binaries using LLM popularity tournament
-run-tournament: data/02.tournament/sorted-$(tournament_stages)
+data/02.tournament/results: data/02.tournament/sorted-$(tournament_stages)
+
 
 data/02.tournament/stage-0:
 	@echo "Creating dummy file for stage 0"
@@ -53,8 +57,7 @@ data/02.tournament/stage-1: data/01.binaries scripts/02.first-round.sh
 data/02.tournament/stage-%:
 	@previous_stage=$$(($* - 1))
 	@rounds=$$(./scripts/02.list-rounds.sh $$previous_stage $(tournament_rounds))
-	@echo $$rounds
-	@make $$rounds
+	@make data/02.tournament/stage-$$previous_stage $$rounds
 	@echo "02 - Combining rounds for stage $*"
 	@cat $$rounds | sort | uniq | shuf > "$@".tmp
 	@mv "$@.tmp" "$@"
@@ -84,8 +87,9 @@ data/02.tournament/sorted-%:
 	@mkdir -p data/02.tournament
 	@stage=$$(./scripts/02.get-stage.sh "$@")
 	@previous_stage=$$(($$stage - 1))
-	@make "data/02.tournament/stage-$$previous_stage"
+	@make "data/02.tournament/stage-$$stage"
+	@make "data/02.tournament/sorted-$$previous_stage"
 	@echo "02 - Sorting data for stage $$stage"
-	@./scripts/02.sort-data.sh "$$stage" "$$previous_stage" > "$@.tmp"
+	@./scripts/02.sort-data.sh "$$previous_stage" "$$stage" > "$@.tmp"
 	@mv "$@.tmp" "$@"
 
