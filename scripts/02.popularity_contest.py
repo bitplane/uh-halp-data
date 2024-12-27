@@ -6,9 +6,8 @@ import requests
 import sys
 import json
 import logging
-from logging.handlers import RotatingFileHandler
 
-def setup_logger():
+def setup_logger(output_dir):
     logger = logging.getLogger("binary_ranking")
     logger.setLevel(logging.DEBUG)
 
@@ -20,17 +19,14 @@ def setup_logger():
     logger.addHandler(info_handler)
 
     # File handler for DEBUG logs
-    file_handler = RotatingFileHandler("/tmp/binary_ranking_debug.log", maxBytes=10**6, backupCount=3)
+    log_file = f"{output_dir}/binary_ranking_debug.log"
+    file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(logging.DEBUG)  # Logs all levels (DEBUG and above)
     file_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(file_formatter)
     logger.addHandler(file_handler)
 
     return logger
-
-
-logger = setup_logger()
-
 
 def load_lines(lines):
     binary_dict = {}
@@ -62,20 +58,17 @@ def load_lines(lines):
 
     return binary_dict
 
-
 def load_file(file_name):
     with open(file_name, "r") as file:
         lines = file.readlines()
     return load_lines(lines)
-
 
 def chunker(keys, batch_size):
     random.shuffle(keys)
     for i in range(0, len(keys), batch_size):
         yield keys[i : i + batch_size]
 
-
-def rank(keys, host, port):
+def rank(keys, host, port, logger):
     url = f"http://{host}:{port}/api/generate"
     payload = {
         "model": "llama3",
@@ -123,12 +116,11 @@ def rank(keys, host, port):
         logger.error(f"Error making request to {url}: {e}")
         return []
 
-
-def score(dictionary, batch_size, host, port, keys):
+def score(dictionary, batch_size, host, port, keys, logger):
     total = len(keys)
     count = 0
     for batch in chunker(keys, batch_size):
-        ranked = rank(batch, host, port)
+        ranked = rank(batch, host, port, logger)
         for i, name in enumerate(reversed(ranked), start=1):
             dictionary[name]["score"] += i
             print(f"{dictionary[name]['score']} {name}")
@@ -137,20 +129,22 @@ def score(dictionary, batch_size, host, port, keys):
         if ranked:
             logger.info(f"{count}/{total} - winner: {ranked[0]}")
 
-
-def score_all(dictionary, batch_size, host, port):
+def score_all(dictionary, batch_size, host, port, output_dir):
+    logger = setup_logger(output_dir)
     keys = list(dictionary.keys())
     while len(keys) > batch_size:
         mean_score = sum(dictionary[key]["score"] for key in keys) / len(keys)
         keys = [key for key in keys if dictionary[key]["score"] >= mean_score]
-        score(dictionary, batch_size, host, port, keys)
-
+        score(dictionary, batch_size, host, port, keys, logger)
 
 def main():
     parser = argparse.ArgumentParser(
         description="Process a file containing binary paths and repos."
     )
     parser.add_argument("file_name", type=str, help="The name of the file to process")
+    parser.add_argument(
+        "output_dir", type=str, help="The directory where logs and results will be stored."
+    )
     parser.add_argument(
         "--batch-size", type=int, default=10, help="Batch size for processing"
     )
@@ -167,11 +161,11 @@ def main():
         random.seed(args.seed)
 
     binary_data = load_file(args.file_name)
+    logger = setup_logger(args.output_dir)
     logger.info(f"Batch size: {args.batch_size}")
     logger.info(f"Total commands: {len(binary_data)}")
 
-    score_all(binary_data, args.batch_size, args.host, args.port)
-
+    score_all(binary_data, args.batch_size, args.host, args.port, args.output_dir)
 
 if __name__ == "__main__":
     main()
