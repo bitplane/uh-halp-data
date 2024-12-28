@@ -56,3 +56,9 @@ It uses Docker, so it won't work in a container.
 * Snag Gemini Nano from Chrome?
 * LaMini-T5-223M?
 * qwen2.5-coder?
+
+
+## Notes
+
+* Packages that hang during install: mythexport
+

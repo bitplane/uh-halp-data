@@ -81,7 +81,7 @@ def main():
     sorted_packages = sorted(package_scores.items(), key=lambda x: x[1], reverse=True)
 
     # Print packages in priority order
-    for score, package in sorted_packages:
+    for package, score in sorted_packages:
         print(f"{score} {package}")
 
 if __name__ == "__main__":

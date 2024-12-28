@@ -1,10 +1,14 @@
 # So we can actually have some persistence
 .ONESHELL:
 
-MAX_PACKAGES=5000
+MAX_PACKAGES=5000000
 
-all: data/03e.docker-run
-	# finished? really? give yourself a pat on the back
+SHELLOPTS=-e
+
+all: 
+	touch data/*
+	make data/03e.docker-run
+	# finished? really? give yourself a pat on the mouth
 
 
 ## Step 1a: List default binaries for Ubuntu
@@ -45,7 +49,7 @@ data/03b.limited-packages: data/03a.package-priority
 	@mv "$@.tmp" "$@"
 
 ## Step 3c: Get binary names
-data/03c.binary-names: data/01b.ubuntu-binaries-and-packages data/03a.package-priority scripts/03c.get_binary_names.py
+data/03c.binary-names: data/01b.ubuntu-binaries-and-packages data/03b.limited-packages scripts/03c.get_binary_names.py
 	@echo "03 - Extracting binary names"
 	@cat data/01a.ubuntu-bin > "$@.tmp"
 	@./scripts/03c.get_binary_names.py data/01b.ubuntu-binaries-and-packages data/03b.limited-packages >> "$@.tmp"
