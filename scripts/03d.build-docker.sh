@@ -21,20 +21,20 @@ echo $base_image
 # Process each batch
 for batch_file in data/03d.packages_*; do
     num=$(basename "$batch_file" | cut -d '_' -f 2)
-    batch_tag=$(( num * batch_size + batch_size ))
+    batch_tag=ubuntu-$(( num * batch_size + batch_size ))-$(uname -m)
     echo "Building image for $batch_file..."
 
     # Build the Docker image for the current batch and log output
     docker build \
         --build-arg BASE_IMAGE=$base_image \
         --build-arg BATCH_FILE=$batch_file \
-        -t uh-halp-data-binaries:ubuntu-$batch_tag \
+        -t uh-halp-data-binaries:$batch_tag \
         -f scripts/03d.Dockerfile . | tee data/03d.build-$batch_tag.log
 
     # Update the base image for the next iteration
-    base_image=uh-halp-data-binaries:ubuntu-$batch_tag
+    base_image=uh-halp-data-binaries:$batch_tag
 done
 
 # Final image tag
-docker tag $base_image uh-halp-data-binaries:ubuntu-final
-echo "Final image built: uh-halp-data-binaries:ubuntu-final"
+docker tag $base_image uh-halp-data-binaries:ubuntu-final-$(uname -m)
+echo "Final image built: uh-halp-data-binaries:ubuntu-final-$(uname -m)"
