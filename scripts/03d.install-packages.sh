@@ -16,7 +16,7 @@ touch "$failed_log"
 install_and_cleanup() {
     packages="$1"
     echo "Installing packages: $packages"
-    apt-get install -y --no-install-recommends $packages || {
+    echo $packages | xargs apt-get install -y --no-install-recommends || {
         echo "Failed to install packages: $packages" >> "$failed_log"
         return 1
     }
@@ -26,7 +26,7 @@ install_and_cleanup() {
 
 batch_packages=$(cat "$batch_file")
 echo "Processing batch: $batch_file"
-install_and_cleanup "$batch_packages"
+install_and_cleanup "$batch_packages" || true
 
 for package in $batch_packages; do
     if ! dpkg -s "$package" >/dev/null 2>&1; then
