@@ -1,17 +1,15 @@
 # So we can actually have some persistence
 .ONESHELL:
+.SHELLFLAGS := -c -e
 
 MAX_PACKAGES=1000
-PACKAGE_BLACKLIST=^pcp|^mythexport
+PACKAGE_BLACKLIST=^pcp$$|^mythexport$$
 
-SHELLOPTS=-e
-
-
-all: 
-	touch data/*
-	make data/03e.docker-run
+all:
+	@echo "SHELL FLAGS IS $(.SHELLFLAGS)"
+	@bash -c "touch ./data/*"
+	@$(MAKE) data/03d.docker-build
 	# finished? really? give yourself a pat on the mouth
-
 
 ## Step 1a: List default binaries for Ubuntu
 data/01a.ubuntu-bin: scripts/01a.standard-binaries.sh
@@ -61,10 +59,10 @@ data/03c.binary-names: data/01b.ubuntu-binaries-and-packages data/03b.limited-pa
 	@./scripts/03c.get_binary_names.py data/01b.ubuntu-binaries-and-packages data/03b.limited-packages >> "$@.tmp"
 	@mv "$@.tmp" "$@"
 
-## Step 3d: Build Docker image
-data/03d.docker-build: data/03c.binary-names scripts/03d.Dockerfile
-	@echo "03 - Building Docker image"
-	docker build -t uh-halp-data-binaries:ubuntu-`uname -m` -f scripts/03d.Dockerfile .
+## Step 3d: Build Docker images for batches
+data/03d.docker-build: scripts/03d.build-docker.sh scripts/03d.Dockerfile scripts/03d.Dockerfile-base data/03b.limited-packages
+	@echo "03 - Building Docker images for batches"
+	@scripts/03d.build-docker.sh
 	@touch "$@"
 
 ## Step 3e: Run Docker image

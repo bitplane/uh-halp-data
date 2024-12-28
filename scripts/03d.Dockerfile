@@ -1,29 +1,20 @@
-# Dockerfile for Step 03d: Build and Install Packages in Docker
+# Dockerfile for Step 03d: Install Packages in Docker
 
-FROM ubuntu:latest
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
 
 # Set up environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Copy limited packages list
-COPY data/03b.limited-packages /data/
-COPY scripts/03d.install-packages.sh /scripts/03d.install-packages.sh
+# Copy the batch file into the container at its original location
+ARG BATCH_FILE
+COPY $BATCH_FILE /$BATCH_FILE
 
-# Ensure the script is executable
-RUN chmod +x /scripts/03d.install-packages.sh
+# Ensure the failed log file is visible in /data
+RUN touch /data/failed-packages.log
 
-# Install base dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends apt-utils figlet && rm -rf /var/lib/apt/lists/*
+# Run the install script for the batch
+RUN /scripts/03d.install-packages.sh /$BATCH_FILE /data/failed-packages.log
 
-# Install packages using the script
-RUN /scripts/03d.install-packages.sh /data/03b.limited-packages /data/03d.failed-packages.log
-
-# Copy binaries list and the extract-help script
-COPY data/03c.binary-names /data/
-COPY scripts/04.extract-help.sh /scripts/04.extract-help.sh
-
-# Ensure the extract-help script is executable
-RUN chmod +x /scripts/04.extract-help.sh
-
-# Default command
-CMD ["/scripts/04.extract-help.sh", "/data", "/data/03c.binary-names"]
+# Default command (does nothing, expects further steps)
+CMD ["/bin/bash"]

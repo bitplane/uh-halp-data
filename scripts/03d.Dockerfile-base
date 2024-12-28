@@ -1,0 +1,18 @@
+# Dockerfile for Step 03d Base: Prepare Ubuntu with Scripts
+FROM ubuntu:latest
+
+# Set up environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install base dependencies. Keep package cache
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends apt-utils figlet
+
+# Copy scripts into the container
+COPY scripts/03d.install-packages.sh /scripts/03d.install-packages.sh
+
+# Ensure the script is executable
+RUN chmod +x /scripts/03d.install-packages.sh
+
+# Default command (does nothing, expects to be extended)
+CMD ["/bin/bash"]
