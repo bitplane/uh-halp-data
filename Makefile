@@ -3,7 +3,7 @@
 .SHELLFLAGS := -c -e
 
 MAX_PACKAGES=15000
-PACKAGE_BLACKLIST=^pcp$$|^mythexport$$
+PACKAGE_BLACKLIST=^pcp$$|^mythexport$$|^prewikka$$
 
 all:
 	@echo "SHELL FLAGS IS $(.SHELLFLAGS)"
