@@ -20,7 +20,8 @@ echo $base_image
 
 # Process each batch
 for batch_file in data/03d.packages_*; do
-    batch_tag=$(basename "$batch_file")
+    num=$(basename "$batch_file" | cut -d '_' -f 2)
+    batch_tag=$(( num * batch_size + batch_size ))
     echo "Building image for $batch_file..."
 
     # Build the Docker image for the current batch and log output
