@@ -16,11 +16,11 @@ touch "$failed_log"
 install_and_cleanup() {
     packages="$@"
     echo "Installing packages: $packages"
-    apt-get install -y --no-install-recommends $packages || {
-        return 1
-    }
+    apt-get install -y --no-install-recommends $packages | grep -Ev '^Get:'
     echo "Running autoremove to clean up unnecessary packages."
     apt-get autoremove -y || echo "Autoremove failed, continuing..."
+    
+    echo TOTAL: $(dpkg -l | grep '^ii' | wc -l) | figlet
 }
 
 export -f install_and_cleanup
@@ -36,3 +36,4 @@ for package in $batch_packages; do
         echo "$package failed"
     fi
 done
+echo TOTAL: $(dpkg -l | grep '^ii' | wc -l)
