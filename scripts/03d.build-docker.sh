@@ -16,9 +16,7 @@ base_image=uh-halp-data-binaries:ubuntu-base
 batch_size=500
 split -a 3 -d -l $batch_size data/03b.limited-packages data/03d.packages_
 
-echo
 echo $base_image
-echo
 
 # Process each batch
 for batch_file in data/03d.packages_*; do

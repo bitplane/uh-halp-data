@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Script to install a batch of packages and log failures
 
@@ -14,21 +14,23 @@ failed_log="$2"
 touch "$failed_log"
 
 install_and_cleanup() {
-    packages="$1"
+    packages="$@"
     echo "Installing packages: $packages"
-    echo $packages | xargs apt-get install -y --no-install-recommends || {
-        echo "Failed to install packages: $packages" >> "$failed_log"
+    apt-get install -y --no-install-recommends $packages || {
         return 1
     }
     echo "Running autoremove to clean up unnecessary packages."
     apt-get autoremove -y || echo "Autoremove failed, continuing..."
 }
 
-batch_packages=$(cat "$batch_file")
+export -f install_and_cleanup
+
 echo "Processing batch: $batch_file"
-install_and_cleanup "$batch_packages" || true
+cat $batch_file | xargs -n20 bash -c 'install_and_cleanup "$@"' _ || true
+batch_packages=$(cat "$batch_file")
 
 for package in $batch_packages; do
+    echo "$package" | figlet
     if ! dpkg -s "$package" >/dev/null 2>&1; then
         echo "$package failed" >> "$failed_log"
         echo "$package failed"

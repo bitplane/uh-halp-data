@@ -2,7 +2,7 @@
 .ONESHELL:
 .SHELLFLAGS := -c -e
 
-MAX_PACKAGES=5000
+MAX_PACKAGES=15000
 PACKAGE_BLACKLIST=^pcp$$|^mythexport$$
 
 all:
