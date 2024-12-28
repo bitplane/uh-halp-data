@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Script to build the base Docker image and process batches incrementally
 
@@ -20,7 +20,7 @@ echo $base_image
 
 # Process each batch
 for batch_file in data/03d.packages_*; do
-    num=$(basename "$batch_file" | cut -d '_' -f 2)
+    num=$(echo $(basename "$batch_file" | cut -d '_' -f 2) | bc)
     batch_tag=ubuntu-$(( num * batch_size + batch_size ))-$(uname -m)
     echo "Building image for $batch_file..."
 
