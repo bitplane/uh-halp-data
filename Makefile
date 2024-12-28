@@ -1,9 +1,11 @@
 # So we can actually have some persistence
 .ONESHELL:
 
-MAX_PACKAGES=5000000
+MAX_PACKAGES=1000
+PACKAGE_BLACKLIST=^pcp|^mythexport
 
 SHELLOPTS=-e
+
 
 all: 
 	touch data/*
@@ -45,7 +47,11 @@ data/03a.package-priority: data/02a.popularity-contest scripts/03a.package_prior
 ## Step 3b: Limit number of packages
 data/03b.limited-packages: data/03a.package-priority
 	@echo "03 - Limiting to $(MAX_PACKAGES) packages"
-	@head -n $(MAX_PACKAGES) $< | cut -d ' ' -f 2 > "$@.tmp"
+	@head -n $(MAX_PACKAGES) $< > "$@.tmp"
+	@cut -d ' ' -f 2 "$@.tmp" > "$@.tmp2"
+	@mv "$@.tmp2" "$@.tmp"
+	@grep -Ev "$(PACKAGE_BLACKLIST)" "$@.tmp" > "$@.tmp2"
+	@mv "$@.tmp2" "$@.tmp"
 	@mv "$@.tmp" "$@"
 
 ## Step 3c: Get binary names

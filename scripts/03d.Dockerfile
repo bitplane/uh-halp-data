@@ -15,16 +15,16 @@ RUN set -eux; \
     count=0; \
     failed_log=/data/failed-packages.log; \
     touch "$failed_log"; \
-    split -l $batch /data/03b.limited-packages /tmp/batch_; \
+    split -d -l $batch /data/03b.limited-packages /tmp/batch_; \
     for batch_file in /tmp/batch_*; do \
-        echo "Installing batch from $batch_file" | figlet; \
-        xargs -a "$batch_file" apt-get install -y --no-install-recommends || true; \
+        echo "Batch: $batch_file" | figlet; \
+        xargs -a "$batch_file" -I{} timeout 600s apt-get install -y --no-install-recommends {} || true; \
         for package in $(cat "$batch_file"); do \
             count=$((count + 1)); \
             echo "$package": "$count" / "$total" | figlet; \
             if ! dpkg -s "$package" >/dev/null 2>&1; then \
                 echo "Retrying installation of $package"; \
-                if ! apt-get install -y --no-install-recommends "$package"; then \
+                if ! timeout 60s apt-get install -y --no-install-recommends "$package"; then \
                     echo "$package failed" >> "$failed_log"; \
                     echo "$package failed"; \
                 fi; \
