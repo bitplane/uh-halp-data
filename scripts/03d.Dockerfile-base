@@ -6,7 +6,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install base dependencies. Keep package cache
 RUN apt-get update && \
-    apt-get install -y apt-utils figlet
+    apt-get install -y apt-utils figlet && \
+    unminimize
 
 # Copy scripts into the container
 COPY scripts/03d.install-packages.sh /scripts/03d.install-packages.sh
