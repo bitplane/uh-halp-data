@@ -52,8 +52,9 @@ cat "$binary_file" | while read -r binary_name; do
     if which $binary_name; then
 
         bash -c "
-        timeout 5s "$binary_name" --help >"$stdout_file" 2>"$stderr_file" || \
-            timeout 5s "$binary_name" -h >"$stdout_file" 2>"$stderr_file" "
+        timeout 1s "$binary_name" --help >"$stdout_file" 2>"$stderr_file" || \
+            timeout 1s "$binary_name" -h >"$stdout_file" 2>"$stderr_file"
+            " </dev/null # oof
     fi
 
     total_lines=$(cat "$cmd_dir"/* | wc -l)
