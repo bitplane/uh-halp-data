@@ -20,11 +20,19 @@ log_file="$output_dir/log.txt"
 done_log="$output_dir/done.log"
 
 total=$(cat $binary_file | wc -l)
-tmp_dir=$(mktemp -d -p /tmp)
+
+if man | grep "This system has been minimized" >/dev/null; then
+    skip_manpages=1
+else
+    skip_manpages=0
+fi
+
+
+tmp_dir=/tmp/get-help-script
+mkdir -p "$tmp_dir"
 
 # Read binaries from input file
 cat "$binary_file" | while read -r binary_name; do
-
 
     cmd_dir="$tmp_dir/$binary_name"
 
@@ -34,25 +42,29 @@ cat "$binary_file" | while read -r binary_name; do
 
     stdout_file="$cmd_dir/stdout"
     stderr_file="$cmd_dir/stderr"
+    manpage_file="$cmd_dir/manpage"
 
-    # Run the command and capture outputs
-    timeout 5s "$binary_name" --help >"$stdout_file" 2>"$stderr_file" || {
-        timeout 5s "$binary_name" -h >"$stdout_file" 2>"$stderr_file" || {
-            echo "$binary_name FAIL" | tee -a "$done_log"
-            cp -r "$cmd_dir" "$output_dir/$binary_name" 2>/dev/null || true
-            continue
-        }
-    }
-
-    # Check for extra files created during execution
-    additional_files=$(ls "$cmd_dir" | grep -v -e "stdout" -e "stderr")
-    if [ -n "$additional_files" ]; then
-        echo "$binary_name CREATED EXTRA FILES" | tee -a "$log_file"
+    if [ $skip_manpages -eq 0 ]; then
+        man "binary_name" > "$manpage_file"
+        test -s "$manpage_file" || rm "$manpage_file"
     fi
 
-    # Copy results back to output directory
-    cp -r "$cmd_dir" "$output_dir/$binary_name"
+    if which $binary_name; then
 
-    echo "$binary_name OK" | tee -a "$done_log"
+        bash -c "
+        timeout 5s "$binary_name" --help >"$stdout_file" 2>"$stderr_file" || \
+            timeout 5s "$binary_name" -h >"$stdout_file" 2>"$stderr_file" "
+    fi
+
+    total_lines=$(cat "$cmd_dir"/* | wc -l)
+
+    if [ $total_lines -le 3 ]; then
+        # Not enough outputs = gtfo
+        echo "$binary_name FAIL" | tee -a "$done_log"
+    else
+        # Copy results back to output directory
+        cp -r "$cmd_dir" "$output_dir/$binary_name"
+        echo "$binary_name OK" | tee -a "$done_log"
+    fi
 done
 
