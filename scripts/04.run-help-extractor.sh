@@ -13,11 +13,12 @@ image_name="uh-halp-data-binaries:ubuntu-final-$(uname -m)"
 
 # Run the Docker container to extract help texts
 echo "Running Docker container to generate help texts..."
-docker run --rm \
+docker run --rm -it \
     -v $(pwd)/data/04.generate-help:/data/04.generate-help \
+    -v $(pwd)/data/03c.binary-names:/data/03c.binary-names:ro \
     -v $(pwd)/scripts:/scripts:ro \
     -v $(pwd)/log/04.generate-help.log:/log/04.generate-help.log \
     $image_name \
-    /scripts/04.extract-help.sh /data
+    /scripts/04.extract-help.sh /data /data/03c.binary-names
 
 echo "Help texts generated and saved to data/04.generate-help"
