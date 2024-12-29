@@ -7,7 +7,7 @@ import sys
 import json
 import logging
 
-def setup_logger(output_dir):
+def setup_logger(log_dir):
     logger = logging.getLogger("binary_ranking")
     logger.setLevel(logging.DEBUG)
 
@@ -19,7 +19,7 @@ def setup_logger(output_dir):
     logger.addHandler(info_handler)
 
     # File handler for DEBUG logs
-    log_file = f"{output_dir}/binary_ranking_debug.log"
+    log_file = f"{log_dir}/binary_ranking_debug.log"
     file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(logging.DEBUG)  # Logs all levels (DEBUG and above)
     file_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
@@ -129,8 +129,8 @@ def score(dictionary, batch_size, host, port, keys, logger):
         if ranked:
             logger.info(f"{count}/{total} - winner: {ranked[0]}")
 
-def score_all(dictionary, batch_size, host, port, output_dir):
-    logger = setup_logger(output_dir)
+def score_all(dictionary, batch_size, host, port, log_dir):
+    logger = setup_logger(log_dir)
     keys = list(dictionary.keys())
     while len(keys) > batch_size:
         mean_score = sum(dictionary[key]["score"] for key in keys) / len(keys)
@@ -143,7 +143,10 @@ def main():
     )
     parser.add_argument("file_name", type=str, help="The name of the file to process")
     parser.add_argument(
-        "output_dir", type=str, help="The directory where logs and results will be stored."
+        "output_dir", type=str, help="The directory where results will be stored."
+    )
+    parser.add_argument(
+        "log_dir", type=str, help="The directory where logs will be stored."
     )
     parser.add_argument(
         "--batch-size", type=int, default=10, help="Batch size for processing"
@@ -161,11 +164,11 @@ def main():
         random.seed(args.seed)
 
     binary_data = load_file(args.file_name)
-    logger = setup_logger(args.output_dir)
+    logger = setup_logger(args.log_dir)
     logger.info(f"Batch size: {args.batch_size}")
     logger.info(f"Total commands: {len(binary_data)}")
 
-    score_all(binary_data, args.batch_size, args.host, args.port, args.output_dir)
+    score_all(binary_data, args.batch_size, args.host, args.port, args.log_dir)
 
 if __name__ == "__main__":
     main()
