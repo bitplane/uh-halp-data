@@ -8,7 +8,7 @@ PACKAGE_BLACKLIST=^pcp$$|^mythexport$$|^prewikka$$|^slapd$$|^mailman3-web$$|^fre
 all:
 	@echo "SHELL FLAGS IS $(.SHELLFLAGS)"
 	@bash -c "touch ./data/*"
-	@$(MAKE) data/03d.docker-build
+	@$(MAKE) data/04.run-help-extractor
 	# finished? really? give yourself a pat on the mouth
 
 ## Step 1a: List default binaries for Ubuntu
@@ -65,9 +65,8 @@ data/03d.docker-build: scripts/03d.build-docker.sh scripts/03d.Dockerfile script
 	@scripts/03d.build-docker.sh
 	@touch "$@"
 
-## Step 3e: Run Docker image
-data/03e.docker-run: data/03d.docker-build
-	@echo "03 - Running Docker image"
-	@mkdir -p data/03e.generate-help
-	docker run --rm -v $(PWD)/data/03e.generate-help:/data/04.generate-help uh-halp-data-binaries:ubuntu-`uname -m` /scripts/04.extract-help.sh /data
+## Step 4: Extract --help texts for each binary
+data/04.run-help-extractor: data/03d.docker-build scripts/04.run-help-extractor.sh
+	@echo "04 - Running --help extractor in Docker"
+	@scripts/04.run-help-extractor.sh
 	@touch "$@"
