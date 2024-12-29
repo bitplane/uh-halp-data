@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install base dependencies. Keep package cache
 RUN apt update && \
     apt upgrade && \
-    apt install -y apt-utils figlet manpages unminimize apt-file && \
+    apt install -y apt-utils figlet manpages unminimize apt-file ubuntu-docs && \
     apt-file update
 
 RUN yes | /usr/bin/unminimize
