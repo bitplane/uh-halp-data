@@ -3,7 +3,7 @@
 .SHELLFLAGS := -c -e
 
 MAX_PACKAGES=15000
-PACKAGE_BLACKLIST=^pcp$$|^mythexport$$|^prewikka$$|^slapd$$|^mailman3-web$$|^freedombox$$
+PACKAGE_BLACKLIST=^pcp$$|^mythexport$$|^prewikka$$|^slapd$$|^mailman3-web$$|^freedombox$$|^kubuntu-installer-prompt$$|^runit$$
 
 all:
 	@bash -c "touch ./data/*"
@@ -65,7 +65,7 @@ data/03d.docker-build: scripts/03d.build-docker.sh scripts/03d.Dockerfile script
 	@touch "$@"
 
 ## Step 4: Extract --help texts for each binary
-data/04.run-help-extractor: data/03d.docker-build scripts/04.run-help-extractor.sh
+data/04.run-help-extractor: data/03d.docker-build data/03c.binary-names scripts/04.run-help-extractor.sh
 	@echo "04 - Running --help extractor in Docker"
 	@scripts/04.run-help-extractor.sh
 	@touch "$@"
