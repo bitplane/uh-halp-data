@@ -8,16 +8,14 @@ set -eux
 mkdir -p data
 
 # Build the base Docker image
-echo "Building base image..."
-docker build --progress=plain -t uh-halp-data-binaries:ubuntu-base -f scripts/03d.Dockerfile-base . 2>&1 | tee log/03d.base-build.log
-base_image=uh-halp-data-binaries:ubuntu-base
+base_image=uh-halp-data-binaries:ubuntu-base-$(uname -m)
+echo "Building base $base_image ..."
+docker build --progress=plain -t $base_image -f scripts/03d.Dockerfile-base . 2>&1 | tee log/03d.base-build.log
 
 # Split the filtered packages file into batches
 batch_size=500
 mkdir -p data/03d.packages
 split -a 3 -d -l $batch_size data/03b.limited-packages data/03d.packages/
-
-echo $base_image
 
 # Process each batch
 for batch_file in data/03d.packages/*; do
