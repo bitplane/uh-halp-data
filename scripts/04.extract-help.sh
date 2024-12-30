@@ -19,59 +19,53 @@ mkdir -p "$output_dir"
 log_file="$output_dir/log.txt"
 done_log="$output_dir/done.log"
 
-# Check where to resume
-last_done=$(cat "$done_log" 2>/dev/null | grep OK | tail -n1 | cut -d " " -f 1)
-resume=0
+total=$(cat $binary_file | wc -l)
 
-# Cleanup temp directory
-cleanup() {
-    rm -rf "$tmp_dir"
-}
+if man | grep "This system has been minimized" >/dev/null; then
+    skip_manpages=1
+else
+    skip_manpages=0
+fi
 
-trap cleanup EXIT
+
+tmp_dir=/tmp/get-help-script
+mkdir -p "$tmp_dir"
 
 # Read binaries from input file
 cat "$binary_file" | while read -r binary_name; do
-    # Skip if already processed
-    if [ "$resume" -eq 0 ] && [ "$binary_name" = "$last_done" ]; then
-        resume=1
-        continue
-    fi
 
-    if [ "$resume" -eq 0 ]; then
-        continue
-    fi
+    cmd_dir="$tmp_dir/$binary_name"
 
     echo "Processing $binary_name" | tee -a "$log_file"
 
-    tmp_dir=$(mktemp -d -p /tmp)
-    cmd_dir="$tmp_dir/$binary_name"
-    mkdir -p "$cmd_dir"
+    mkdir "$cmd_dir" || continue
 
     stdout_file="$cmd_dir/stdout"
     stderr_file="$cmd_dir/stderr"
+    manpage_file="$cmd_dir/manpage"
 
-    # Run the command and capture outputs
-    timeout 10s "$binary_name" --help >"$stdout_file" 2>"$stderr_file" || {
-        timeout 10s "$binary_name" -h >"$stdout_file" 2>"$stderr_file" || {
-            echo "$binary_name FAIL" | tee -a "$done_log"
-            cp -r "$cmd_dir" "$output_dir/$binary_name" 2>/dev/null || true
-            continue
-        }
-    }
-
-    # Check for extra files created during execution
-    additional_files=$(ls "$cmd_dir" | grep -v -e "stdout" -e "stderr")
-    if [ -n "$additional_files" ]; then
-        echo "$binary_name CREATED EXTRA FILES" | tee -a "$log_file"
+    if [ $skip_manpages -eq 0 ]; then
+        man "binary_name" > "$manpage_file"
+        test -s "$manpage_file" || rm "$manpage_file"
     fi
 
-    # Copy results back to output directory
-    cp -r "$cmd_dir" "$output_dir/$binary_name"
+    if which $binary_name; then
 
-    echo "$binary_name OK" | tee -a "$done_log"
+        bash -c "
+        timeout 1s -s KILL "$binary_name" --help >"$stdout_file" 2>"$stderr_file" || \
+            timeout -s KILL 1s "$binary_name" -h >"$stdout_file" 2>"$stderr_file"
+            " </dev/null
+    fi
 
+    total_lines=$(cat "$cmd_dir"/* | wc -l)
+
+    if [ $total_lines -le 3 ]; then
+        # Not enough outputs = gtfo
+        echo "$binary_name FAIL" | tee -a "$done_log"
+    else
+        # Copy results back to output directory
+        cp -r "$cmd_dir" "$output_dir/$binary_name"
+        echo "$binary_name OK" | tee -a "$done_log"
+    fi
 done
 
-# Cleanup temp directory
-cleanup
