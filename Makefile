@@ -3,7 +3,7 @@
 .SHELLFLAGS := -c -e
 
 MAX_PACKAGES=15000
-PACKAGE_BLACKLIST=^pcp$$|^mythexport$$|^prewikka$$|^slapd$$|^mailman3-web$$|^freedombox$$|^kubuntu-installer-prompt$$|^runit$$
+PACKAGE_BLACKLIST=^pcp$$|^mythexport$$|^prewikka$$|^slapd$$|^mailman3-web$$|^freedombox$$|^kubuntu-installer-prompt$$|^runit$$|^amazon-ec2-net-utils$$|^xemacs21-nomule$$
 
 all:
 	@bash -c "touch ./data/*"
