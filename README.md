@@ -16,8 +16,9 @@ It uses Docker, so it won't work in a container.
 2. Do a tournament using llama to figure out which ones are most important
 3. Install all those packages into a docker container. It's 90GB and is
    [here](https://hub.docker.com/repository/docker/bitplane1/uh-halp-data-binaries/).
-4. Extract all the help files. Manpages too maybe? **<-- you are here**
-5. Use llama to generate a narrative about how people generally use each program.
+4. Extract all the help files and manpages.
+5. **YOU ARE HERE ->** Use llama to generate a narrative about how people
+   generally use each program.
 6. Combine the docs and the narrative with uh-halp description to generate
    training data.
 7. Filter the data - get rid of things that don't look right.
