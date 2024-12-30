@@ -11,17 +11,19 @@ There is a program called "{{ command_name }}". It performs the following functi
 
 We want to understand how this program is used in real-world scenarios. Generate:
 1. A one-line summary of the program's purpose.
-2. A list of 10 realistic use cases where humans commonly use this program. Each use case should:
+2. List other commands that are frequently used with it, or are related.
+3. A list of 10 realistic use cases where humans commonly use this program. Each use case should:
    - Be unique and practical.
    - Focus on real-world tasks, ones that can be solved by typing the command name in.
    - Describe a reason why you'd type the program into the console.
    - Focus mainly on common scenarios, rather than exotic or speculative ones.
-3. List other commands that are frequently used with it, or are related.
 
 Here’s an example for the `ls` command:
 
 **COMMAND NAME:** ls  
 **SUMMARY:** Lists the contents of directories.  
+**RELATED:**
+* find, xargs, file, stat, du, sort
 **USE:**
 1. I want to see what files are in this directory.
 2. Which file in here is the biggest?
@@ -33,8 +35,6 @@ Here’s an example for the `ls` command:
 8. Combine with `grep` to find specific filenames in a directory.
 9. Pass these files to `xargs` and pass to another program.
 10. Save this list of files for later.
-**RELATED:**
-* find, xargs, file, stat, du, sort
 
 Now, generate outputs for the following command:
 
