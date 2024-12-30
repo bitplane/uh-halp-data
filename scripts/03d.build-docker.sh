@@ -7,10 +7,17 @@ set -eux
 # Ensure the data directory exists
 mkdir -p data
 
+plain_progress=""
+
+# didn't bother to check why this doesn't work. either buildx vs build, or a version snafu
+if docker --help build | grep -- --progress; then
+    plain_progress="--progress=plain"
+fi
+
 # Build the base Docker image
 base_image=uh-halp-data-binaries:ubuntu-base-$(uname -m)
 echo "Building base $base_image ..."
-docker build --progress=plain -t $base_image -f scripts/03d.Dockerfile-base . 2>&1 | tee log/03d.base-build.log
+docker build $plain_progress -t $base_image -f scripts/03d.Dockerfile-base . 2>&1 | tee log/03d.base-build.log
 
 # Split the filtered packages file into batches
 batch_size=500
@@ -24,7 +31,7 @@ for batch_file in data/03d.packages/*; do
     echo "Building image for $batch_file..."
 
     # Build the Docker image for the current batch and log output
-    docker build --progress=plain \
+    docker build $plain_progress \
         --build-arg BASE_IMAGE=$base_image \
         --build-arg BATCH_FILE=$batch_file \
         -t uh-halp-data-binaries:$batch_tag \
