@@ -19,6 +19,6 @@ docker run --rm -it \
     -v $(pwd)/scripts:/scripts:ro \
     -v $(pwd)/log/04.generate-help.log:/log/04.generate-help.log \
     $image_name \
-    /scripts/04.extract-help.sh /data /data/03c.binary-names
+    sh /scripts/04.extract-help.sh /data /data/03c.binary-names
 
 echo "Help texts generated and saved to data/04.generate-help"
