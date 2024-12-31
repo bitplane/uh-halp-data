@@ -34,11 +34,9 @@ It uses Docker, so it won't work in a container.
 
 * shell builtins in the binary list.
 * Add `/etc/alternatives` because our list of those are minimal.
-* Docker publish scripts - currently manual.
-  * Release process in general.
 * Detect command subcommand pattern with nested --halps going on 
+* Add `info` helps too.
 * Popularity contest needs to filter out GUI apps.
-* manpage dumps from docker image
 * ¿que halp? - translate training data
 
 #### Never to have
