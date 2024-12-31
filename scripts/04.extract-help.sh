@@ -1,4 +1,4 @@
-#!/bin/sh
+#/bin/sh
 
 # Output directory for results
 data_dir="$1"
@@ -45,7 +45,7 @@ cat "$binary_file" | while read -r binary_name; do
     manpage_file="$cmd_dir/manpage"
 
     if [ $skip_manpages -eq 0 ]; then
-        man "binary_name" > "$manpage_file"
+        man "$binary_name" > "$manpage_file"
         test -s "$manpage_file" || rm "$manpage_file"
     fi
 
