@@ -42,8 +42,6 @@ Here’s an example for the `ls` command:
 Now, generate outputs for the following command:
 
 **COMMAND NAME:** {{ command_name }}  
-**SUMMARY:**  
-**USE CASES:**
 """
 
 def prompt_llm(prompt, host, port):
