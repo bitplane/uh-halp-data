@@ -3,7 +3,7 @@
 .SHELLFLAGS := -c -e
 
 MAX_PACKAGES=15000
-PACKAGE_BLACKLIST=^pcp$$|^mythexport$$|^prewikka$$|^slapd$$|^mailman3-web$$|^freedombox$$|^kubuntu-installer-prompt$$|^runit$$|^amazon-ec2-net-utils$$|^xemacs21-nomule$$|^uvtool-libvirt$$|^epoptes$$|^namazu2$$
+PACKAGE_BLACKLIST=^pcp$$|^mythexport$$|^prewikka$$|^slapd$$|^mailman3-web$$|^freedombox$$|^kubuntu-installer-prompt$$|^runit$$|^amazon-ec2-net-utils$$|^xemacs21-nomule$$|^uvtool-libvirt$$|^epoptes$$|^namazu2$$|^sympa$$|^firebuild$$|^epic4$$|^epic5$$|^initramfs-tools$$|^linux-image-6.8.0-1009-xilinx$$
 
 all:
 	@bash -c "touch ./data/*"
