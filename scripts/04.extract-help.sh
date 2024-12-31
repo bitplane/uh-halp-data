@@ -50,7 +50,6 @@ cat "$binary_file" | while read -r binary_name; do
     fi
 
     if which $binary_name; then
-
         bash -c "
         timeout 1s -s KILL "$binary_name" --help >"$stdout_file" 2>"$stderr_file" || \
             timeout -s KILL 1s "$binary_name" -h >"$stdout_file" 2>"$stderr_file"
@@ -59,7 +58,7 @@ cat "$binary_file" | while read -r binary_name; do
 
     total_lines=$(cat "$cmd_dir"/* | wc -l)
 
-    if [ $total_lines -le 3 ]; then
+    if [ $total_lines -le 3 ] || [ $total_lines -ge 2000 ]; then
         # Not enough outputs = gtfo
         echo "$binary_name FAIL" | tee -a "$done_log"
     else
