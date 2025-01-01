@@ -15,7 +15,7 @@ It uses Docker, so it won't work in a container.
 
 1. Get a list of all binaries in Ubuntu's package manager
 2. Do a tournament using llama to figure out which ones are most important
-3. Install all those packages into a docker container. It's 90GB and is
+3. Install all those packages into a docker container. It's over 200GB and is
    [here](https://hub.docker.com/repository/docker/bitplane1/uh-halp-data-binaries/).
 4. Extract all the help files and manpages.
 5. **YOU ARE HERE ->** Use llama to generate a narrative about how people
