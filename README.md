@@ -1,6 +1,7 @@
 # Generating data for uh-halp model
 
-Making a dataset for command line help completion.
+Making a dataset for command line help completion, so I can run my
+[uh-halp](https://github.com/bitplane/uh-halp) program locally.
 
 ## Requirements
 
