@@ -143,9 +143,6 @@ def main():
     )
     parser.add_argument("file_name", type=str, help="The name of the file to process")
     parser.add_argument(
-        "output_dir", type=str, help="The directory where results will be stored."
-    )
-    parser.add_argument(
         "log_dir", type=str, help="The directory where logs will be stored."
     )
     parser.add_argument(

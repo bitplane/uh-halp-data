@@ -32,7 +32,7 @@ data/01.binaries: data/01b.ubuntu-binaries-and-packages data/01a.ubuntu-bin scri
 data/02a.popularity-contest: data/01.binaries
 	@echo "02 - Running popularity contest"
 	@timestamp=$$(date -u +%Y-%m-%d_%H%M%S)
-	@./scripts/02.popularity_contest.py data/01.binaries data/02a.popularity-contest data log > "$@.$$timestamp.tmp"
+	@./scripts/02.popularity_contest.py data/01.binaries log > "$@.$$timestamp.tmp"
 	@cp "$@.$$timestamp.tmp" "$@"
 
 ## Step 3a: Prioritize the packages based on the binary rankings.
