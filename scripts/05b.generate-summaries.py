@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import argparse
+import os
 import json
 import requests
 import sys
@@ -55,28 +55,49 @@ def save_output(output_file, content):
     with open(output_file, 'w') as f:
         f.write(content)
 
+def process_directory(command_dir, host, port):
+    """Process a single directory, generating a summary from help.txt."""
+    help_file = os.path.join(command_dir, "help.txt")
+    summary_file = os.path.join(command_dir, "summary.txt")
+
+    if not os.path.exists(help_file) or os.path.getsize(help_file) == 0:
+        sys.stderr.write(f"Skipping {command_dir}: no valid help.txt\n")
+        save_output(summary_file, "No valid help data available.\n")
+        return
+
+    command_name = os.path.basename(command_dir)
+
+    with open(help_file, "r") as f:
+        help_text = f.read()
+
+    if not help_text.strip():
+        sys.stderr.write(f"Skipping {command_dir}: help.txt is empty or blank\n")
+        save_output(summary_file, "No valid help data available.\n")
+        return
+
+    summary = generate_summary(command_name, help_text, host, port)
+    if summary:
+        save_output(summary_file, summary)
+        print(f"\nSummary saved to {summary_file}", file=sys.stderr)
+    else:
+        sys.stderr.write(f"Failed to generate summary for {command_dir}\n")
+        save_output(summary_file, "Failed to generate summary.\n")
+
 def main():
-    parser = argparse.ArgumentParser(description="Generate command summaries from JSON responses.")
-    parser.add_argument("command_name", help="The name of the command.")
-    parser.add_argument("help_file", help="Path to the help file.")
-    parser.add_argument("output_file", help="Path to save the generated summary.")
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Generate summaries for all commands in a directory.")
+    parser.add_argument("input_dir", help="Path to the directory containing command subdirectories.")
     parser.add_argument("--host", default="localhost", help="LLM service host.")
     parser.add_argument("--port", default=11434, type=int, help="LLM service port.")
     args = parser.parse_args()
 
-    # Load help text
-    with open(args.help_file, 'r') as f:
-        help_text = f.read()
+    for command_dir in sorted(os.listdir(args.input_dir)):
+        full_path = os.path.join(args.input_dir, command_dir)
+        if not os.path.isdir(full_path):
+            continue
 
-    # Generate summary
-    summary = generate_summary(args.command_name, help_text, args.host, args.port)
-
-    # Save summary
-    if summary:
-        save_output(args.output_file, summary)
-        print(f"\nSummary saved to {args.output_file}", file=sys.stderr)
-    else:
-        print("\nFailed to generate summary.", file=sys.stderr)
+        process_directory(full_path, args.host, args.port)
 
 if __name__ == "__main__":
     main()
