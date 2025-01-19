@@ -7,7 +7,7 @@ PACKAGE_BLACKLIST=^pcp$$|^mythexport$$|^prewikka$$|^slapd$$|^mailman3-web$$|^fre
 
 all:
 	@bash -c "touch ./data/*"
-	@$(MAKE) data/04.run-help-extractor
+	@$(MAKE) data/05.generate-summaries
 	# finished? really? give yourself a pat on the mouth
 
 ## Step 1a: List default binaries installed in Ubuntu.
@@ -64,8 +64,17 @@ data/03d.docker-build: scripts/03d.build-docker.sh scripts/03d.Dockerfile script
 	@scripts/03d.build-docker.sh
 	@touch "$@"
 
-## Step 4: Extract --help texts for each binary
+## Step 4: Extract --help texts and manpages
 data/04.run-help-extractor: data/03d.docker-build data/03c.binary-names scripts/04.run-help-extractor.sh
 	@echo "04 - Running --help extractor in Docker"
 	@scripts/04.run-help-extractor.sh
 	@touch "$@"
+
+## Step 5a: get best source of help
+data/05a.choose-help-source: scripts/05a.choose-source.py data/04.run-help-extractor
+	@echo "05a - Getting best source of help"
+	@scripts/05a.choose-source.py
+	@touch "$@"
+
+## Step 5b: generate summaries of commands
+
