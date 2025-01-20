@@ -60,6 +60,10 @@ def process_directory(command_dir, host, port):
     help_file = os.path.join(command_dir, "help.txt")
     summary_file = os.path.join(command_dir, "summary.txt")
 
+    if os.path.exists(summary_file):
+        sys.stderr.write(f"Skipping {command_dir}: already has summary.txt")
+        continue
+
     if not os.path.exists(help_file) or os.path.getsize(help_file) == 0:
         sys.stderr.write(f"Skipping {command_dir}: no valid help.txt\n")
         save_output(summary_file, "No valid help data available.\n")
