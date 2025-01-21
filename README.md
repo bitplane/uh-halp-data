@@ -18,10 +18,9 @@ It uses Docker, so it won't work in a container.
 3. Install all those packages into a docker container. It's over 200GB and is
    [here](https://hub.docker.com/repository/docker/bitplane1/uh-halp-data-binaries/).
 4. Extract all the help files and manpages.
-5. **YOU ARE HERE ->** Use llama to generate a narrative about how people
-   generally use each program.
-6. Combine the docs and the narrative with uh-halp description to generate
-   training data.
+5. Use llama to generate a narrative about how people generally use each program.
+6. 📌 YOU ARE HERE: Combine the docs and the narrative with uh-halp description to
+   generate training data.
 7. Filter the data - get rid of things that don't look right.
 8. Fine tune a small model with the generated data
 9. Squish it, push it
@@ -33,8 +32,6 @@ It uses Docker, so it won't work in a container.
 
 #### Musty havelys
 
-* shell builtins in the binary list.
-* Add `/etc/alternatives` because our list of those are minimal.
 * Detect command subcommand pattern with nested --halps going on 
 * Add `info` helps too.
 * Popularity contest needs to filter out GUI apps.
@@ -54,6 +51,7 @@ It uses Docker, so it won't work in a container.
 * Break this apart and do the same for brew
 * Get collections of scripts and summarize each line,
   "what was the author thinking" -> "what would they ask 'uh' to get this line"
+* add tldr dataset
 
 ### model
 
